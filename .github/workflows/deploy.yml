@@ -1,51 +1,21 @@
-name: Deploy Vite Project
-
+name: Deploy Code to Release Branch 🚀
 on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build Project
+    name: Push to Release Branch
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Workflow dispatch event that pushes the current version to the release branch.
+      # From here the secondary production deployment workflow will trigger to build the dependencies.
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          node-version: 22
-          cache: "npm"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Upload Build Artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ./dist
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          branch: releases/v4
+          folder: .
+          clean: false
+          single-commit: true
